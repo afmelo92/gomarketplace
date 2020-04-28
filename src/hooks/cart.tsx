@@ -44,12 +44,12 @@ const CartProvider: React.FC = ({ children }) => {
 
   const increment = useCallback(
     async id => {
-      const filterProducts = products.filter(product => product.id !== id);
-      const newProduct = products.find(product => product.id === id);
-      if (newProduct) {
-        newProduct.quantity += 1;
+      const newProduct = products.findIndex(product => product.id === id);
+      if (newProduct >= 0) {
+        const updatedProducts = [...products];
+        updatedProducts[newProduct].quantity += 1;
 
-        setProducts([...filterProducts, newProduct]);
+        setProducts(updatedProducts);
       }
 
       await AsyncStorage.setItem(ASYNC_STORAGE_KEY, JSON.stringify(products));
@@ -60,14 +60,15 @@ const CartProvider: React.FC = ({ children }) => {
   const decrement = useCallback(
     async id => {
       const filterProducts = products.filter(product => product.id !== id);
-      const newProduct = products.find(product => product.id === id);
-      if (newProduct) {
-        if (newProduct.quantity <= 1) {
+      const newProduct = products.findIndex(product => product.id === id);
+      if (newProduct >= 0) {
+        if (products[newProduct].quantity <= 1) {
           setProducts(filterProducts);
         } else {
-          newProduct.quantity -= 1;
+          const updatedProducts = [...products];
+          updatedProducts[newProduct].quantity -= 1;
 
-          setProducts([...filterProducts, newProduct]);
+          setProducts(updatedProducts);
         }
       }
 
